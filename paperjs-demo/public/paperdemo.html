@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <title>Paperoids</title>
+    <script type="text/javascript" src="js/jquery-3.4.1.min.js"></script>
+    <script type="text/javascript" src="js/paper-full.min.js"></script>
+    <script type="text/paperscript" canvas="paperjsdemocanvas" src="js/paperdemo.js"></script>
+    <style type="text/css">
+        body {
+            margin: 0;
+        }
+
+        #demo_main {
+            margin-top: 48px;
+        }
+
+        #main-part {
+            margin-right: 8px;
+            width: auto;
+            margin: 0 16px;
+        }
+
+        #chart_wrapper {
+            overflow: scroll;
+            height: calc(100vh - 120px);
+            width: 100%;
+            display: inline-block;
+        }
+
+        #parent-div {
+            position: relative;
+            display: inline-block;
+        }
+
+        #paperjsdemocanvas {
+            width: 400px;
+            height: 400px;
+        }
+
+        .dynamic-textarea {
+            border: 1px solid;
+            outline: none;
+        }
+
+        .demo {
+            display: inline-block;
+            width: calc(100% - 120px);
+            border: 1px solid black;
+            margin: 32px;
+        }
+
+        .legend {
+            padding: 4px 16px;
+            align-items: center;
+            background-color: black;
+            color: white;
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            flex-wrap: wrap;
+        }
+
+        .legend .key {
+            background-color: white;
+            color: black;
+            margin: 0 4px;
+            padding: 0 4px;
+            font-weight: 900;
+        }
+
+        .legend .sc {
+            margin: 2px 4px;
+        }
+
+        #file {
+            display: none;
+        }
+
+        .mindmap {
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="demo">
+        <div id="chart_wrapper">
+            <div id="parent-div" class="canvas-wrapper">
+                <canvas id="paperjsdemocanvas"></canvas>
+            </div>
+        </div>
+        <div class="legend">
+            <span class="sc"><span class="key">↑ ↓ ← → </span>select</span>
+            <span class="sc"><span class="key">Shift+↑ ↓</span>move</span>
+            <span class="sc"><span class="key">Enter</span>create next sibling</span>
+            <span class="sc"><span class="key">Shift+Enter</span>create child</span>
+            <span class="sc"><span class="key">Space</span>edit</span>
+            <span class="sc"><span class="key">Delete</span>delete</span>
+            <span class="sc"><span class="key">Ctrl+c</span>copy</span>
+            <span class="sc"><span class="key">Ctrl+x</span>cut</span>
+            <span class="sc"><span class="key">Ctrl+v</span>paste</span>
+            <span class="sc"><span class="key">Esc</span>abort editing</span>
+            <span class="sc"><span class="key">c</span>center</span>
+            <span class="sc"><span class="key">e</span>download png</span>
+            <span class="sc"><span class="key">j</span>download json</span>
+            <span class="sc"><span class="key">i</span>import json</span>
+        </div>
+        <input id="file" type="file" />
+    </div>
+</body>
+
+</html>
