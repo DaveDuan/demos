@@ -1,6 +1,6 @@
-(function () {
-    var inputBoxWidth = 100, inputBoxHeight = 40, padding = 4, fontSize = 18, minWidth = 20;
-    var horiDistance = 100, vertDistance = 20;
+paperjsDemo = function () {
+    var inputBoxWidth = 100, inputBoxHeight = 40, padding = 4, fontSize = 16, minWidth = 20;
+    var horiDistance = 100, vertDistance = 16;
     var creating = false, inputting = false, editAbort = false;
     var activeItem;
     var KeyIndex = {
@@ -302,14 +302,14 @@
         }
         reDrawItem(element);
         if (!!element.lastChild.hasChildren()) {
-            for (var i = 0; i < element.lastChild.children.length; i++) {
+            for (var i = 0, l = element.lastChild.children.length; i < l; i++) {
                 var child = element.lastChild.children[i];
                 child.children[KeyIndex.LINE].remove();
             }
 
 
             var childX = element.firstChild.bounds.x + element.firstChild.bounds.width + horiDistance;
-            for (var i = 0; i < element.lastChild.children.length; i++) {
+            for (var i = 0, l = element.lastChild.children.length; i < l; i++) {
                 var child = element.lastChild.children[i];
                 reDraw(child);
                 child.bounds.y = i == 0 ? element.bounds.y : element.lastChild.children[i - 1].bounds.y + element.lastChild.children[i - 1].bounds.height + vertDistance;
@@ -321,10 +321,10 @@
             //父节点在子节点块的中间
             element.firstChild.bounds.y = (element.lastChild.firstChild.firstChild.bounds.y + element.lastChild.lastChild.firstChild.bounds.y + element.lastChild.lastChild.firstChild.bounds.height) / 2 - element.firstChild.bounds.height / 2;
 
-            for (var i = 0; i < element.lastChild.children.length; i++) {
+            for (var i = 0, l = element.lastChild.children.length; i < l; i++) {
                 var child = element.lastChild.children[i];
                 //child.children[1].remove();
-                child.insertChild(1, createLine(element, child));
+                child.insertChild(KeyIndex.LINE, createLine(element, child));
             }
         }
 
@@ -406,7 +406,7 @@
         if (!item.lastChild.hasChildren) {
             return data;
         }
-        for (var i = 0; i < item.lastChild.children.length; i++) {
+        for (var i = 0, l = item.lastChild.children.length; i < l; i++) {
             data.children.push(exportItemData(item.lastChild.children[i]));
         }
         return data;
@@ -437,7 +437,7 @@
             return {};
         }
         var item = createItem(parentItem, null, itemData.text);
-        for (var i = 0; i < itemData.children.length; i++) {
+        for (var i = 0, l = itemData.children.length; i < l; i++) {
             importItemData(itemData.children[i], item);
         }
         return item;
@@ -640,4 +640,11 @@
         }
         return false;
     };
-})();
+
+    return {
+        clear: function () {
+            removeItem(rootGroup);
+        },
+        importJSONData: importJSONData
+    };
+}();
