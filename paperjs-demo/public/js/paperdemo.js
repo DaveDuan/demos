@@ -2,7 +2,7 @@ paperjsDemo = function () {
     var inputBoxWidth = 100, inputBoxHeight = 40, padding = 4, fontSize = 16, minWidth = 20, CollapseReduis = 5;
     var horiDistance = 100, vertDistance = 16;
     var lineColor = new Color('rgb(55, 182, 189)');
-    var creating = false, inputting = false, editAbort = false;
+    var creating = false, inputting = false, editAbort = false, squLine=true;
     var activeItem;
     var rootGroup;
     var clipboardData;
@@ -26,7 +26,6 @@ paperjsDemo = function () {
     }
 
     function createItem(parent, brother, text) {
-        creating = true;
         var textBox = createTextBox(parent, view.center.x, view.center.y, !!text ? text : 'input text', fontSize);
         textBox.on('mousedown', textBoxOnClick);
         textBox.on('doubleclick', textBoxOnDoubleClick);
@@ -228,14 +227,14 @@ paperjsDemo = function () {
         this.collapseG.onClick = this.toggle;
     }
 
-    Collapse.prototype.toggle = function(event) {
-        if (event.target.parent.children['subNodes'].visible) {
-            event.target.children['center'].fillColor = lineColor;
+    Collapse.prototype.toggle = function() {
+        if (this.parent.children['subNodes'].visible) {
+            this.children['center'].fillColor = lineColor;
         } else {
-            event.target.children['center'].fillColor = 'white';
+            this.children['center'].fillColor = 'white';
         }
-        selectItem(event.target.parent);
-        event.target.parent.children['subNodes'].visible = !event.target.parent.children['subNodes'].visible;
+        selectItem(this.parent);
+        this.parent.children['subNodes'].visible = !this.parent.children['subNodes'].visible;
         reDraw(rootGroup);
         centerActiveItem();
     }
@@ -317,8 +316,10 @@ paperjsDemo = function () {
         var path = new Path();
         path.strokeColor = lineColor;
         path.add(rj);
-        // path.add(new Point(rj.x + 4, rj.y));
-        // path.add(new Point(lj.x - 10, lj.y));
+        if(squLine) {
+            path.add(new Point((lj.x+rj.x)/2, rj.y));
+            path.add(new Point((lj.x+rj.x)/2, lj.y));
+        }
         path.add(lj);
         // path.smooth({ type: 'geometric' });
         path.name='line';
@@ -625,6 +626,7 @@ paperjsDemo = function () {
                 reDraw(rootGroup);
                 break;
             case 'enter':
+                creating = true;
                 if (shiftHolding) {
                     createChild();
                 } else {
@@ -678,9 +680,17 @@ paperjsDemo = function () {
                 break;
             case 'control':
                 controlHolding = true;
+                break;            
+            case 's':
+                squLine = !squLine;
+                reDraw(rootGroup);
                 break;
             case 'space':
-                editItem(activeItem);
+                if (shiftHolding) {
+                    activeItem.children['collapse'].emit('click', activeItem.children['collapse']);
+                } else {
+                    editItem(activeItem);
+                }
                 break;
             default:
                 return true;
