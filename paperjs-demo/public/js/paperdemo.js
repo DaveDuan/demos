@@ -1,13 +1,9 @@
 paperjsDemo = function () {
-    var inputBoxWidth = 100, inputBoxHeight = 40, padding = 4, fontSize = 16, minWidth = 20;
+    var inputBoxWidth = 100, inputBoxHeight = 40, padding = 4, fontSize = 16, minWidth = 20, CollapseReduis = 5;
     var horiDistance = 100, vertDistance = 16;
+    var lineColor = new Color('rgb(55, 182, 189)');
     var creating = false, inputting = false, editAbort = false;
     var activeItem;
-    var KeyIndex = {
-        TEXT_BOX: 0,
-        LINE: 1,
-        CHILDREN: 2
-    };
     var rootGroup;
     var clipboardData;
     // console.info('Start.........');
@@ -34,15 +30,24 @@ paperjsDemo = function () {
         var textBox = createTextBox(parent, view.center.x, view.center.y, !!text ? text : 'input text', fontSize);
         textBox.on('mousedown', textBoxOnClick);
         textBox.on('doubleclick', textBoxOnDoubleClick);
-        var item = new Group([textBox, new Group()]);
+        if(!!parent && !parent.children['collapse']) {
+            var collapse = new Collapse(parent);
+            parent.addChild(collapse.getCollapse());
+        }
+        
+        var actions = new Group([]);
+        actions.name='actions';
+        var subNodes = new Group();
+        subNodes.name = 'subNodes';
+        var item = new Group([textBox, actions, subNodes]);
         if (!!parent) {
             var line = createLine(parent, item);
-            item.insertChild(1, line);
+            item.addChild(line);
             item.data.depth = parent.data.depth + 1;
-            item.addTo(parent.lastChild);
+            item.addTo(parent.children['subNodes']);
         } else if (!!brother) {
             var line = createLine(brother.parent.parent, item);
-            item.insertChild(1, line);
+            item.addChild(line);
             item.data.depth = brother.parent.parent.data.depth + 1;
             item.insertAbove(brother);
         } else {
@@ -61,7 +66,7 @@ paperjsDemo = function () {
     }
 
     function editItem(item) {
-        var textBox = item.firstChild;
+        var textBox = item.children['textBox'];
         var bounds = textBox.bounds;
         var textarea = $("<textarea id='input_text' class='dynamic-textarea' " +
             "style='padding:0; margin:0; font-size:" + fontSize + "px; position:absolute; left:" + bounds.x +
@@ -102,12 +107,8 @@ paperjsDemo = function () {
 
     }
 
-    function rightJoint(textbox) {
-        if (textbox.firstChild.data.name == 'underline') {
-            return textbox.bounds.bottomRight;
-        } else {
-            return textbox.bounds.rightCenter;
-        }
+    function rightJoint(item) {
+        return item.children['collapse'].bounds.center;
     }
 
     function leftJoint(textbox) {
@@ -121,18 +122,18 @@ paperjsDemo = function () {
     function selectItem(item) {
         disselectItem(activeItem);
         activeItem = item;
-        activeItem.firstChild.firstChild.strokeWidth = 2;
-        activeItem.firstChild.firstChild.shadowColor = new Color(0, 0, 0);
-        activeItem.firstChild.firstChild.shadowBlur = 12;
-        activeItem.firstChild.firstChild.shadowOffset = new Point(5, 5);
-        scrollToItem(item.firstChild);
+        activeItem.children['textBox'].firstChild.strokeWidth = 2;
+        activeItem.children['textBox'].firstChild.shadowColor = new Color(0, 0, 0);
+        activeItem.children['textBox'].firstChild.shadowBlur = 12;
+        activeItem.children['textBox'].firstChild.shadowOffset = new Point(5, 5);
+        scrollToItem(item.children['textBox']);
     }
 
     function disselectItem(activeItem) {
         if (!!activeItem) {
-            activeItem.firstChild.firstChild.strokeWidth = 1;
-            activeItem.firstChild.firstChild.shadowBlur = 0;
-            activeItem.firstChild.firstChild.shadowOffset = 0;
+            activeItem.children['textBox'].firstChild.strokeWidth = 1;
+            activeItem.children['textBox'].firstChild.shadowBlur = 0;
+            activeItem.children['textBox'].firstChild.shadowOffset = 0;
         }
     }
 
@@ -141,8 +142,8 @@ paperjsDemo = function () {
         if (previousSibling != null) {
             var tem = previousSibling;
             for (var i = previousSibling.data.depth; i < updowningBeginDepth; i++) {
-                if (tem.lastChild.hasChildren()) {
-                    tem = tem.lastChild.lastChild;
+                if (tem.children['subNodes'].hasChildren()) {
+                    tem = tem.children['subNodes'].lastChild;
                 } else {
                     return tem;
                 }
@@ -167,8 +168,8 @@ paperjsDemo = function () {
         if (nextSibling != null) {
             var tem = nextSibling;
             for (var i = nextSibling.data.depth; i < updowningBeginDepth; i++) {
-                if (tem.lastChild.hasChildren()) {
-                    tem = tem.lastChild.firstChild;
+                if (tem.children['subNodes'].hasChildren()) {
+                    tem = tem.children['subNodes'].firstChild;
                 } else {
                     return tem;
                 }
@@ -203,7 +204,44 @@ paperjsDemo = function () {
         } else {
             around = createBorderRect(pointText);
         }
-        return new Group([around, pointText]);;
+        var textBox = new Group([around, pointText]);
+        textBox.name='textBox';
+        return textBox;
+    }
+
+    function Collapse(parent) {
+        var center = parent.children['textBox'].bounds.rightCenter + [CollapseReduis, 0];
+        var collapse = new Path.Circle({
+            center: center,
+            radius: CollapseReduis,
+            fillColor: lineColor
+        });
+        collapse.name = 'collapse';
+        var center = new Path.Circle({
+            center: center,
+            radius: CollapseReduis - 2,
+            fillColor: 'white'
+        });
+        center.name = 'center';
+        this.collapseG = new Group([collapse,center]);
+        this.collapseG.name='collapse';
+        this.collapseG.onClick = this.toggle;
+    }
+
+    Collapse.prototype.toggle = function(event) {
+        if (event.target.parent.children['subNodes'].visible) {
+            event.target.children['center'].fillColor = lineColor;
+        } else {
+            event.target.children['center'].fillColor = 'white';
+        }
+        selectItem(event.target.parent);
+        event.target.parent.children['subNodes'].visible = !event.target.parent.children['subNodes'].visible;
+        reDraw(rootGroup);
+        centerActiveItem();
+    }
+
+    Collapse.prototype.getCollapse = function() {
+        return this.collapseG;
     }
 
     function removeActiveItem() {
@@ -261,9 +299,9 @@ paperjsDemo = function () {
 
     function reDrawItem(item) {
         if (item.data.depth > 1) {
-            adjustUnderlineWidth(item.firstChild);
+            adjustUnderlineWidth(item.children['textBox']);
         } else {
-            adjustBorderSize(item.firstChild);
+            adjustBorderSize(item.children['textBox']);
         }
         if (item == activeItem) {
             selectItem(item);
@@ -274,15 +312,16 @@ paperjsDemo = function () {
         if (!fromGroup || !toGroup || toGroup == rootGroup) {
             return;
         }
-        var rj = rightJoint(fromGroup.firstChild);
-        var lj = leftJoint(toGroup.firstChild);
+        var rj = rightJoint(fromGroup);
+        var lj = leftJoint(toGroup.children['textBox']);
         var path = new Path();
-        path.strokeColor = new Color('rgb(55, 182, 189)');
+        path.strokeColor = lineColor;
         path.add(rj);
         // path.add(new Point(rj.x + 4, rj.y));
         // path.add(new Point(lj.x - 10, lj.y));
         path.add(lj);
         // path.smooth({ type: 'geometric' });
+        path.name='line';
         return path;
     }
 
@@ -301,30 +340,38 @@ paperjsDemo = function () {
             return;
         }
         reDrawItem(element);
-        if (!!element.lastChild.hasChildren()) {
-            for (var i = 0, l = element.lastChild.children.length; i < l; i++) {
-                var child = element.lastChild.children[i];
-                child.children[KeyIndex.LINE].remove();
+        if (!!element.children['subNodes'].hasChildren() && element.children['subNodes'].visible) {
+            for (var i = 0, l = element.children['subNodes'].children.length; i < l; i++) {
+                var child = element.children['subNodes'].children[i];
+                child.children['line'].remove();
             }
 
-
-            var childX = element.firstChild.bounds.x + element.firstChild.bounds.width + horiDistance;
-            for (var i = 0, l = element.lastChild.children.length; i < l; i++) {
-                var child = element.lastChild.children[i];
+            var childX = element.children['textBox'].bounds.x + element.children['textBox'].bounds.width + horiDistance;
+            for (var i = 0, l = element.children['subNodes'].children.length; i < l; i++) {
+                var child = element.children['subNodes'].children[i];
                 reDraw(child);
-                child.bounds.y = i == 0 ? element.bounds.y : element.lastChild.children[i - 1].bounds.y + element.lastChild.children[i - 1].bounds.height + vertDistance;
+                child.bounds.y = i == 0 ? element.bounds.y : element.children['subNodes'].children[i - 1].bounds.y + element.children['subNodes'].children[i - 1].bounds.height + vertDistance;
                 child.bounds.x = childX;
             }
 
-            //父节点在孙\子节点块的中间
-            //element.firstChild.bounds.y = element.lastChild.bounds.y + element.lastChild.bounds.height/2 - element.firstChild.bounds.height/2;
-            //父节点在子节点块的中间
-            element.firstChild.bounds.y = (element.lastChild.firstChild.firstChild.bounds.y + element.lastChild.lastChild.firstChild.bounds.y + element.lastChild.lastChild.firstChild.bounds.height) / 2 - element.firstChild.bounds.height / 2;
+            // textbox vertical center
+            if (!!element.children['textBox']) {
+                element.children['textBox'].bounds.y = (element.children['subNodes'].firstChild.children['textBox'].bounds.y + element.children['subNodes'].lastChild.children['textBox'].bounds.y + element.children['subNodes'].lastChild.children['textBox'].bounds.height) / 2 - element.children['textBox'].bounds.height / 2;
+            }
+            if(!!element.children['collapse']) {
+                if (element.children['textBox'].firstChild.data.name == 'underline') {
+                    element.children['collapse'].position = element.children['textBox'].firstChild.bounds.rightCenter + [CollapseReduis, 0];
+                } else {
+                    // var path = Path.Rectangle(element.children['textBox'].firstChild.bounds);
+                    // path.strokeColor='red';
+                    element.children['collapse'].position = element.children['textBox'].firstChild.bounds.rightCenter + [CollapseReduis, 0];
+                }
+            }
 
-            for (var i = 0, l = element.lastChild.children.length; i < l; i++) {
-                var child = element.lastChild.children[i];
+            for (var i = 0, l = element.children['subNodes'].children.length; i < l; i++) {
+                var child = element.children['subNodes'].children[i];
                 //child.children[1].remove();
-                child.insertChild(KeyIndex.LINE, createLine(element, child));
+                child.addChild(createLine(element, child));
             }
         }
 
@@ -401,13 +448,13 @@ paperjsDemo = function () {
             return {};
         }
         var data = {};
-        data.text = item.firstChild.lastChild.content;
+        data.text = item.children['textBox'].lastChild.content;
         data.children = [];
-        if (!item.lastChild.hasChildren) {
+        if (!item.children['subNodes'].hasChildren) {
             return data;
         }
-        for (var i = 0, l = item.lastChild.children.length; i < l; i++) {
-            data.children.push(exportItemData(item.lastChild.children[i]));
+        for (var i = 0, l = item.children['subNodes'].children.length; i < l; i++) {
+            data.children.push(exportItemData(item.children['subNodes'].children[i]));
         }
         return data;
     }
@@ -454,7 +501,7 @@ paperjsDemo = function () {
     }
 
     function centerActiveItem() {
-        var position = activeItem.firstChild.bounds;
+        var position = activeItem.children['textBox'].bounds;
         var center = new Point(position.x + position.width / 2, + position.y + position.height / 2);
         $('#chart_wrapper').scrollTop(center.y - $('#chart_wrapper').height() / 2);
         $('#chart_wrapper').scrollLeft(center.x - $('#chart_wrapper').width() / 2);
@@ -537,8 +584,8 @@ paperjsDemo = function () {
                 }
                 break;
             case 'right':
-                if (!!activeItem.lastChild.firstChild) {
-                    selectItem(activeItem.lastChild.firstChild);
+                if (!!activeItem.children['subNodes'].firstChild) {
+                    selectItem(activeItem.children['subNodes'].firstChild);
                 }
                 break;
             case 'up':
