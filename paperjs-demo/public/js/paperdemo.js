@@ -3,7 +3,7 @@ paperjsDemo = function () {
     var horiDistance = 100, vertDistance = 16;
     var lineColor = new Color('rgb(55, 182, 189)');
     var creating = false, inputting = false, editAbort = false, squLine=true;
-    var activeItem;
+    var activeItem, showingActions;
     var rootGroup;
     var clipboardData;
     // console.info('Start.........');
@@ -25,20 +25,15 @@ paperjsDemo = function () {
         editItem(item);
     }
 
-    function createItem(parent, brother, text) {
+    function createItem(parent, brother, text, link) {
         var textBox = createTextBox(parent, view.center.x, view.center.y, !!text ? text : 'input text', fontSize);
-        textBox.on('mousedown', textBoxOnClick);
-        textBox.on('doubleclick', textBoxOnDoubleClick);
         if(!!parent && !parent.children['collapse']) {
-            var collapse = new Collapse(parent);
-            parent.addChild(collapse.getCollapse());
+            var center = parent.children['textBox'].bounds.rightCenter + [CollapseReduis, 0];
+            new Collapse(center, CollapseReduis).addTo(parent);
         }
-        
-        var actions = new Group([]);
-        actions.name='actions';
         var subNodes = new Group();
         subNodes.name = 'subNodes';
-        var item = new Group([textBox, actions, subNodes]);
+        var item = new Group([textBox, subNodes]);
         if (!!parent) {
             var line = createLine(parent, item);
             item.addChild(line);
@@ -52,6 +47,9 @@ paperjsDemo = function () {
         } else {
             rootGroup = item;
             rootGroup.data.depth = 0;
+        }
+        if (!!link) {
+            new Actions(link).toggleVisible(true).addTo(item);
         }
         return item;
     }
@@ -95,7 +93,11 @@ paperjsDemo = function () {
                 selectItem(item);
             } else {
                 if (creating) {
+                    var parent = item.parent.parent;
                     item.remove();
+                    if (!parent.children['subNodes'].hasChildren()) {
+                        parent.children['collapse'].remove();
+                    }
                 } else {
                     textBox.visible = true;
                 }
@@ -104,6 +106,44 @@ paperjsDemo = function () {
             creating = false;
         });
 
+    }
+
+    function editLink(item) {
+        var textBox = item.children['textBox'];
+        var bounds = textBox.bounds;
+        var textarea = $("<textarea id='input_text' class='dynamic-textarea' " +
+            "style='padding:0; margin:0; font-size:" + fontSize + "px; position:absolute; left:" + bounds.x +
+            "px; top:" + bounds.y + "px; width: " + inputBoxWidth +
+            "px; height: " + inputBoxHeight +
+            "px; resize;' placeholder='https://'></textarea>");
+        var actions = item.children['actions'];
+        var link;
+        if (!!actions) {
+            link = item.children['actions'].children['linkAction'];
+        }
+        if (!!link && !!link.data && !!link.data.link) {
+            textarea.val(link.data.link);
+        }
+        $("#parent-div").append(textarea);
+        textarea.focus();
+        inputting = true;
+        editAbort = false;
+        textarea.focusout(function () {
+            inputting = false;
+            textarea.remove();
+            var linkVal = textarea.val();
+            // if (!linkVal.startsWith('http')) {
+            //     linkVal = 'http://' + linkVal;
+            // }
+            if (!editAbort) {
+                if (!!link && !!link.data && !!link.data.link) {
+                    link.data.link = linkVal;
+                } else {
+                    // var point = [ textBox.bounds.right + 4, textBox.bounds.y];
+                    new Actions(linkVal).toggleVisible(true).addTo(item);
+                }
+            }
+        });
     }
 
     function rightJoint(item) {
@@ -141,7 +181,7 @@ paperjsDemo = function () {
         if (previousSibling != null) {
             var tem = previousSibling;
             for (var i = previousSibling.data.depth; i < updowningBeginDepth; i++) {
-                if (tem.children['subNodes'].hasChildren()) {
+                if (tem.children['subNodes'].hasChildren() && tem.children['subNodes'].visible) {
                     tem = tem.children['subNodes'].lastChild;
                 } else {
                     return tem;
@@ -167,7 +207,7 @@ paperjsDemo = function () {
         if (nextSibling != null) {
             var tem = nextSibling;
             for (var i = nextSibling.data.depth; i < updowningBeginDepth; i++) {
-                if (tem.children['subNodes'].hasChildren()) {
+                if (tem.children['subNodes'].hasChildren() && tem.children['subNodes'].visible) {
                     tem = tem.children['subNodes'].firstChild;
                 } else {
                     return tem;
@@ -205,25 +245,38 @@ paperjsDemo = function () {
         }
         var textBox = new Group([around, pointText]);
         textBox.name='textBox';
+        textBox.on('mousedown', textBoxOnClick);
+        textBox.on('doubleclick', textBoxOnDoubleClick);
+        textBox.onMouseEnter = function() {
+            var actions = this.parent.children['actions'];
+            if (!actions) {
+                return;
+            }
+            actions.visible = true;
+            if (!!showingActions && showingActions != actions) {
+                showingActions.visible = false;
+            }
+            showingActions = actions;
+        };
         return textBox;
     }
 
-    function Collapse(parent) {
-        var center = parent.children['textBox'].bounds.rightCenter + [CollapseReduis, 0];
+    function Collapse(center, reduis) {
         var collapse = new Path.Circle({
             center: center,
-            radius: CollapseReduis,
+            radius: reduis,
             fillColor: lineColor
         });
         collapse.name = 'collapse';
         var center = new Path.Circle({
             center: center,
-            radius: CollapseReduis - 2,
+            radius: reduis - 2,
             fillColor: 'white'
         });
         center.name = 'center';
         this.collapseG = new Group([collapse,center]);
         this.collapseG.name='collapse';
+        this.collapseG.obj=this;
         this.collapseG.onClick = this.toggle;
     }
 
@@ -243,15 +296,79 @@ paperjsDemo = function () {
         return this.collapseG;
     }
 
+    Collapse.prototype.addTo = function(parent) {
+        parent.addChild(this.collapseG);
+    }
+
+    function Actions(link) {
+        var topLeft = new Point(0 , 0);
+        var toolRect = new Path.Rectangle(topLeft, new Size(16, 16));
+        toolRect.fillColor = 'grey';
+        toolRect.fillColor.alpha = 0.2;
+        toolRect.name='backbroundRect';
+        var redirectLine = new Path();
+        redirectLine.strokeColor = lineColor;
+        redirectLine.strokeWidth = 2;
+        redirectLine.add(topLeft + [4, 12]);
+        redirectLine.add(topLeft + [12, 4]);
+        redirectLine.add(topLeft + [6, 4]);
+        redirectLine.add(topLeft + [12, 4]);
+        redirectLine.add(topLeft + [12, 10]);
+
+        var linkAction = new Group([toolRect, redirectLine]);
+        linkAction.name='linkAction';
+        linkAction.data.link = link;
+        
+        linkAction.onClick = function() {
+            window.open(this.data.link, '_blank');
+        };
+
+        linkAction.onMouseEnter = function() {
+            this.children['backbroundRect'].shadowColor = new Color(0, 0, 0);
+            this.children['backbroundRect'].shadowBlur = 3;
+        };
+
+        linkAction.onMouseLeave = function() {
+            this.children['backbroundRect'].shadowBlur = 0;
+        };
+
+        this.actionsG = new Group([linkAction]);
+        this.actionsG.name='actions';
+        this.actionsG.obj=this;
+    }
+
+    Actions.prototype.getActionsG = function() {
+        return this.actionsG;
+    }
+
+    Actions.prototype.addTo = function(parent) {
+        parent.addChild(this.actionsG);
+        var textBox = parent.children['textBox'];
+        this.actionsG.bounds.x = textBox.bounds.right + 4;
+        this.actionsG.bounds.y = textBox.bounds.y;
+    }
+
+    Actions.prototype.toggleVisible = function(visible) {
+        if (visible != undefined) {
+            this.actionsG.visible = !!visible;
+        } else {
+            this.actionsG.visible = !this.actionsG.visible;
+        }
+        return this;
+    }
+
     function removeActiveItem() {
         removeItem(activeItem);
     }
 
     function removeItem(item) {
         if (item != rootGroup) {
-            var tem = item.parent.parent;
+            var parent = item.parent.parent;
             item.remove();
-            selectItem(tem);
+            if (!parent.children['subNodes'].hasChildren()) {
+                parent.children['collapse'].remove();
+            }
+            selectItem(parent);
         } else {
             if (!!item) {
                 item.remove();
@@ -450,6 +567,15 @@ paperjsDemo = function () {
         }
         var data = {};
         data.text = item.children['textBox'].lastChild.content;
+        var actions = item.children['actions'];
+        var link;
+        if (!!actions) {
+            link = item.children['actions'].children['linkAction'];
+        }
+        if (!!link && !!link.data && !!link.data.link) {
+            data.link = link.data.link;
+        }
+        
         data.children = [];
         if (!item.children['subNodes'].hasChildren) {
             return data;
@@ -484,7 +610,7 @@ paperjsDemo = function () {
         if (!itemData) {
             return {};
         }
-        var item = createItem(parentItem, null, itemData.text);
+        var item = createItem(parentItem, null, itemData.text, itemData.link);
         for (var i = 0, l = itemData.children.length; i < l; i++) {
             importItemData(itemData.children[i], item);
         }
@@ -585,7 +711,7 @@ paperjsDemo = function () {
                 }
                 break;
             case 'right':
-                if (!!activeItem.children['subNodes'].firstChild) {
+                if (!!activeItem.children['subNodes'].firstChild && activeItem.children['subNodes'].visible) {
                     selectItem(activeItem.children['subNodes'].firstChild);
                 }
                 break;
@@ -627,7 +753,11 @@ paperjsDemo = function () {
                 break;
             case 'enter':
                 creating = true;
-                if (shiftHolding) {
+                if (controlHolding) {
+                    if (!!activeItem.children['actions'].children['linkAction']) {
+                        activeItem.children['actions'].children['linkAction'].emit('click');
+                    }
+                } else if (shiftHolding) {
                     createChild();
                 } else {
                     createSibling();
@@ -670,6 +800,9 @@ paperjsDemo = function () {
                 break;
             case 'i':
                 $('#file').click();
+                break;
+            case 'l':
+                editLink(activeItem);
                 break;
             case 'j':
                 var data = exportItemData(rootGroup);
