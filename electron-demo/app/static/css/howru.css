@@ -1,0 +1,166 @@
+@font-face {
+    font-family: 'Material Icons';
+    font-style: normal;
+    font-weight: 400;
+    src: url(../font/MaterialIcons-Regular.eot);
+    /* For IE6-8 */
+    src: local('Material Icons'), local('MaterialIcons-Regular'), url(../font/MaterialIcons-Regular.woff2) format('woff2'), url(../font/MaterialIcons-Regular.woff) format('woff'), url(../font/MaterialIcons-Regular.ttf) format('truetype');
+}
+
+.material-icons {
+    font-family: 'Material Icons';
+    font-weight: normal;
+    font-style: normal;
+    font-size: 24px;
+    /* Preferred icon size */
+    display: inline-block;
+    line-height: 1;
+    text-transform: none;
+    letter-spacing: normal;
+    word-wrap: normal;
+    white-space: nowrap;
+    direction: ltr;
+    /* Support for all WebKit browsers. */
+    -webkit-font-smoothing: antialiased;
+    /* Support for Safari and Chrome. */
+    text-rendering: optimizeLegibility;
+    /* Support for Firefox. */
+    -moz-osx-font-smoothing: grayscale;
+    /* Support for IE. */
+    font-feature-settings: 'liga';
+}
+
+body {
+    overflow: hidden;
+}
+
+#container {
+    width: 100vw;
+    height: 100vh;
+}
+
+#content {
+    display: flex;
+    flex-direction: row;
+    height: 100%;
+}
+
+#content .left-nav {
+    height: 100%;
+    width: 200px;
+    overflow-y: scroll;
+}
+
+#content .right-content {
+    height: 100%;
+    width: 100%;
+    display: flex;
+    padding: 16px;
+    justify-content: center;
+    flex-direction: column;
+    overflow-y: scroll;
+}
+
+#content .left-nav ul li {
+    padding: 8px;
+    border-bottom: 1px solid #757575;
+}
+
+#content .left-nav ul li a {
+    cursor: pointer;
+    color: white;
+}
+
+#server_list_item_tem {
+    display: none;
+}
+
+.add_message {
+    height: 64px;
+}
+
+.page {
+    display: block;
+    width: 100%;
+    height: 100%;
+    padding: 16px;
+}
+
+#add_server_page {
+    padding: 16px 64px;
+}
+
+.server_name {
+    width: 100%;
+}
+
+.name_label_wrapper {
+    height: 32px;
+}
+
+.name_label {
+    font-size: 32px;
+}
+
+
+/* #server_details_page {
+
+} */
+
+.key {
+    font-size: 12px;
+    color: #616161;
+    /* padding: 0 16px 0 0; */
+}
+
+.value {
+    font-size: 16px;
+    color: #424242;
+}
+
+pre {
+    margin: 4px 0;
+    color: white !important;
+}
+
+.collection .thin-row {
+    margin-bottom: 0;
+}
+
+.collection.with-header .collection-item {
+    padding-left: 12px;
+}
+
+#toast-container {
+    right: 5%;
+    left: auto;
+    bottom: 5%;
+    top: auto;
+}
+
+.small-spinner {
+    width: 16px;
+    height: 16px;
+}
+
+.command-result {
+    overflow: scroll;
+    max-height: 200px;
+    background-color: rgb(38, 50, 56);
+}
+
+::-webkit-scrollbar {
+    width: 0px;
+    height: 0px;
+    /* Remove scrollbar space */
+    background: transparent;
+    /* Optional: just make scrollbar invisible */
+}
+
+
+/* Optional: show position indicator in red */
+
+
+/* ::-webkit-scrollbar-thumb {
+    background: #FF0000;
+} */

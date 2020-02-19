@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <!-- https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP -->
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'">
+    <meta http-equiv="X-Content-Security-Policy" content="default-src 'self'; script-src 'self'">
+    <link type="text/css" rel="stylesheet" href="./static/css/materialize.min.css" media="screen,projection" />
+    <link type="text/css" rel="stylesheet" href="./static/css/howru.css" media="screen,projection" />
+    <title>Go Go VPS</title>
+</head>
+
+<body class="grey lighten-5">
+    <div id="container">
+        <div id="header">
+
+        </div>
+        <div id="content">
+            <div class="left-nav grey darken-3">
+                <ul>
+                    <li><a id="add_button" class="waves-effect waves-teal btn"><i
+                                class="material-icons right">add</i>Add</a></li>
+                    <li><a id="setting_button" class="waves-effect waves-teal btn"><i
+                        class="material-icons right">settings</i>Settings</a></li>
+                    <ul id="server_list">
+                        <li id="server_list_item_tem">
+                            <a class="server_name waves-effect waves-teal btn"></a>
+                        </li>
+                    </ul>
+                </ul>
+            </div>
+            <div class="right-content">
+                <div id="add_server_page" data-page-name="add" class="page">
+                    <div class="container">
+                        <div class="row">
+                            <div class="input-field col s12">
+                                <input id="add_name" type="text" class="validate">
+                                <label for="add_name">Name</label>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="input-field col s8">
+                                <input id="add_host" type="text" class="validate">
+                                <label for="add_host">Host</label>
+                                <span class="helper-text" data-error="Incorrect IP address" data-success="Correct"></span>
+                            </div>
+                            <div class="input-field col s4">
+                                <input id="add_port" type="text" class="validate">
+                                <label for="add_port">Port</label>
+                                <span class="helper-text" data-error="Incorrect port" data-success="Correct"></span>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="input-field col s12">
+                                <input id="add_username" type="text" class="validate">
+                                <label for="add_username">User Name</label>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="input-field col s12">
+                                <input id="add_password" type="text" class="validate">
+                                <label for="add_password">Password</label>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="input-field col s6 center-align">
+                                <button id="add_test" class="btn waves-effect waves-light" type="submit" name="action">Test
+                                    <i class="material-icons right">import_export</i>
+                                </button>
+                            </div>
+                            <div class="input-field col s6 center-align">
+                                <button id="add_add" class="btn waves-effect waves-light" type="submit" name="action">Add
+                                    <i class="material-icons right">playlist_add</i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="row add_message">
+                            <div class="input-field col s12">
+                                <div id="add_test_progress" class="progress hide">
+                                    <div class="indeterminate"></div>
+                                </div>
+                                <div id="add_test_success" class="teal-text accent-3 hide">
+                                    Connection Succussful ! <i class="material-icons left">check_circle</i>
+                                </div>
+                                <div id="add_test_fail" class="red-text hide"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+                <div id="setting_page" data-page-name="setting" class="page hide">
+                    <div class="row">
+                        <ul class="collection with-header env-collection">
+                            <li class="collection-header teal lighten-5">
+                                <div class="row thin-row valign-wrapper">
+                                    <div class="col s6">
+                                        <h6>Commands</h6>
+                                    </div>
+                                    <div class="col s6 right-align">
+                                        <a class="add-env btn-small add-button"><i
+                                            class="material-icons">add</i></a>
+                                        <a class="waves-effect waves-teal btn-small save-button">Save</a>
+                                    </div>
+                                </div>
+                            </li>
+                            <li class="collection-item">
+                                <div id="add_env_row_tem" class="row hide">
+                                    <div class="col s4">
+                                        <input placeholder="Key" type="text" class="env-key validate">
+                                    </div>
+                                    <div class="col s6">
+                                        <textarea placeholder="Command" class="env-value materialize-textarea validate"></textarea>
+                                    </div>
+                                    <div class="col s2">
+                                        <a class="add-env btn-small remove-button secondary-content"><i
+                                                    class="material-icons">remove</i></a>
+                                    </div>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div id="server_details_page" data-page-name="server" class="page server-page hide">
+                    <div>
+                        <div class="row">
+                            <div class="col s4">
+                                <div class="valign-wrapper name_label_wrapper">
+                                    <label class="name_label"></label>
+                                </div>
+                            </div>
+
+                            <div class="col">
+                                <div class="right-align secondary-content">
+                                    <span id="connection_status" class="red-text"></span>
+                                    <a class="connect-button waves-effect waves-light btn-small"><i
+                                        class="material-icons right">swap_horiz</i>Connect</a>
+                                    <a class="delete-button waves-effect waves-light btn-small red darken-1"><i
+                                            class="material-icons right">delete</i>Delete Server</a>
+                                </div>
+
+                            </div>
+                            <!-- <div class="col s3">
+                                <a class="delete-button waves-effect waves-light btn-small red darken-1"><i
+                                        class="material-icons right">delete</i>Delete</a>
+                            </div> -->
+                        </div>
+                        <div class="row thin-row">
+                            <div id="connecting_progress" class="progress hide">
+                                <div class="indeterminate"></div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <ul class="collection with-header">
+                                <li class="collection-header teal lighten-5">
+                                    <h7>Connection info</h7>
+                                </li>
+                                <li class="collection-item">
+                                    <div class="row thin-row">
+                                        <div class="col s2">
+                                            <span class="key">Host</span>
+                                        </div>
+                                        <div class="col s8">
+                                            <span class="value host"></span>
+                                        </div>
+                                        <!-- <div class="col s3">
+                                            <a href="#!" class="secondary-content"><i class="material-icons">send</i></a>
+                                        </div> -->
+                                    </div>
+                                </li>
+                                <li class="collection-item">
+                                    <div class="row thin-row">
+                                        <div class="col s2">
+                                            <span class="key">Port</span>
+                                        </div>
+                                        <div class="col s8">
+                                            <span class="value port"></span>
+                                        </div>
+                                        <!-- <div class="col s3">
+                                            <a href="#!" class="secondary-content"><i class="material-icons">send</i></a>
+                                        </div> -->
+                                    </div>
+                                </li>
+                                <li class="collection-item">
+                                    <div class="row thin-row">
+                                        <div class="col s2">
+                                            <span class="key">Username</span>
+                                        </div>
+                                        <div class="col s8">
+                                            <span class="value username"></span>
+                                        </div>
+                                        <!-- <div class="col s3">
+                                            <a href="#!" class="secondary-content"><i class="material-icons">send</i></a>
+                                        </div> -->
+                                    </div>
+                                </li>
+                                <li class="collection-item">
+                                    <div class="row thin-row">
+                                        <div class="col s2">
+                                            <span class="key">Password</span>
+                                        </div>
+                                        <div class="col s8">
+                                            <span class="value password"></span>
+                                        </div>
+                                        <!-- <div class="col s3">
+                                            <a href="#!" class="secondary-content"><i class="material-icons">edit</i></a>
+                                        </div> -->
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="row">
+                            <ul class="collection with-header">
+                                <li class="collection-header teal lighten-5">
+                                    <h7>Commands</h7>
+                                    <!-- <div class="secondary-content">
+                                        <a href="#!">Reset</a>
+                                        <a href="#!">Reset</a>
+                                    </div> -->
+
+                                </li>
+                                <li class="collection-item env-li hide">
+                                    <div class="row thin-row">
+                                        <div class="col s2">
+                                            <span class="env-key key tooltipped" data-position="top"></span>
+                                        </div>
+                                        <div class="col s8 command-result">
+                                            <pre class="env-result value"></pre>
+                                        </div>
+                                        <div class="col s2">
+                                            <div class="row thin-row secondary-content valign-wrapper">
+                                                <!-- <div class="col s4">
+                                                    <a class="add-env"><i
+                                                        class="material-icons">add</i></a>
+                                                </div>
+                                                <div class="col s4">
+                                                    <a class="add-env"><i
+                                                        class="material-icons">remove</i></a>
+                                                </div> -->
+                                                <!-- <div class="col s4"> -->
+                                                <div class="preloader-wrapper small-spinner active refresh-spinner hide">
+                                                    <div class="spinner-layer spinner-green-only">
+                                                        <div class="circle-clipper left">
+                                                            <div class="circle"></div>
+                                                        </div>
+                                                        <div class="gap-patch">
+                                                            <div class="circle"></div>
+                                                        </div>
+                                                        <div class="circle-clipper right">
+                                                            <div class="circle"></div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <i class="material-icons error-icon red-text tooltipped hide" data-position="top">error_outline</i>
+                                                <a href="#!" class="valign-wrapper refresh"><i class="material-icons">refresh</i></a>
+                                                <!-- </div> -->
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+                        <!-- <div class="row">
+                            <ul class="collection with-header">
+                                <li class="collection-header teal lighten-5">
+                                    <h7>Service</h7>
+                                </li>
+                                <li class="collection-item">
+                                    <div><label class="host">Host:</label><a href="#!" class="secondary-content"><i
+                                                class="material-icons">send</i></a></div>
+                                </li>
+                            </ul>
+                        </div> -->
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="footer">
+
+        </div>
+    </div>
+
+    <!-- You can also require other files to run in this process -->
+    <script src="./static/js/materialize.min.js"></script>
+    <script src="./renderer.js"></script>
+</body>
+
+</html>

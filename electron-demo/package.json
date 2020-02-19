@@ -1,0 +1,37 @@
+{
+    "name": "go-go-vps",
+    "version": "1.0.0",
+    "description": "A minimal Electron application",
+    "main": "main.js",
+    "scripts": {
+        "start": "electron .",
+        "pack": "electron-builder --dir",
+        "dist": "electron-builder"
+    },
+    "repository": "",
+    "keywords": [
+        "Electron",
+        "quick",
+        "start",
+        "tutorial",
+        "demo"
+    ],
+    "author": "GitHub",
+    "devDependencies": {
+        "electron": "^8.0.0",
+        "electron-builder": "^22.3.2"
+    },
+    "dependencies": {
+        "electron-store": "^5.1.0",
+        "ssh2": "^0.8.7"
+    },
+    "build": {
+        "appId": "123456789",
+        "mac": {
+            "category": "gogovps"
+        },
+        "directories": {
+            "buildResources": "buildResources"
+        }
+    }
+}

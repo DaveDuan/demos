@@ -1,7 +1,4 @@
 # demos
 Demo codes for devasdemo.com
 
-```
-npm install
-npm start
-```
+Every demo has its own README.md.
