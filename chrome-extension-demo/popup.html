@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <link href="popup.css" rel="stylesheet" tyle="text/css">
+    <link href="circle.css" rel="stylesheet" tyle="text/css">
+</head>
+
+<body>
+    <div class="loader">
+        <div id="loading_bar" class="bar"></div>
+    </div>
+    <div class="container">
+        <!-- <div class="relative-flex-row bottom-border-1-gray-solid margin-top-16 margin-bottom-8 padding-bottom-4">
+            <div class="grow-1">
+                <span>Current ID:</span>
+                <span>123456</span>
+            </div>
+            <div>
+                <span>Switch to my ID:</span>
+                <input type="number" class="no-outline width-64 bottom-border-1-gray-solid">
+                <a class="button pointer">apply</a>
+            </div>
+
+        </div> -->
+        <div class="relative-flex-row bottom-border-1-gray-solid margin-top-16 margin-bottom-4 padding-bottom-4">
+            <span class="grow-1">Saved browser spaces:</span>
+            <div>
+                <a id="save_current_tabs" class="button pointer padding-left-4">Save Current</a>
+            </div>
+        </div>
+        <div class="full-width-row-wrapper">
+            <div id="manual_temp" class="full-width-row-wrapper margin-bottom-4 padding-2 padding-left-16 hide">
+                <div class="collapse-title relative-flex-row bottom-border-1-gray-solid">
+                    <span class="title grow-1">2020-2-21 14:53:00</span>
+                    <div class="">
+                        <a class="button pointer padding-left-4 expand">Expand</a>
+                        <a class="button pointer padding-left-4 remove">Remove</a>
+                        <a class="button pointer padding-left-4 open">Open</a>
+                    </div>
+                </div>
+                <div class="collapse-body full-width-row-wrapper">
+                    <div class="tabs-temp relative-flex-row margin-bottom-4 hide">
+                        <div class="grow-1 relative-flex-row max-width-100p">
+                            <div class="indecator width-32 center-children">
+                                <div class="progress c100 smallx24">
+                                    <span>12%</span>
+                                    <div class="slice">
+                                        <div class="bar"></div>
+                                        <div class="fill"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="grow-1 full-width-row-wrapper max-width-100p-32">
+                                <div class="relative-flex-row padding-bottom-1">
+                                    <div class="page-link relative-flex-row max-width-100p-16">
+                                        <a class="pointer truncate none-text-decoration z-index-1">https://developer.chrome.com/extensions/overview</a>
+                                    </div>
+                                    <div class="link-action height-1em">
+                                        <a class="pointer center-children height-100p"><img class="height-100p" src="images/copy.svg" alt="Copy"></a>
+                                    </div>
+                                </div>
+                                <div class="relative-flex-row max-width-100p-16">
+                                    <span class="page-title max-width-100p">
+                                    <p class="pointer truncate padding-0 margin-0">Overview - Google Chrome</p>
+                                </span>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- <div class="width-32">
+                            <div><a class="pointer">x</a></div>
+                        </div> -->
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="relative-flex-row bottom-border-1-gray-solid margin-top-16 margin-bottom-4 padding-bottom-4">
+            <span>Auto saving every 1 minute:</span>
+        </div>
+        <div class="full-width-row-wrapper">
+            <div id="auto_temp" class="full-width-row-wrapper margin-bottom-4 padding-2 padding-left-16 hide">
+                <div class="collapse-title relative-flex-row bottom-border-1-gray-solid">
+                    <span class="title grow-1">2020-2-21 14:53:00</span>
+                    <div class="">
+                        <a class="button pointer padding-left-4 expand">Expand</a>
+                        <a class="button pointer padding-left-4 permanent">Permanent</a>
+                        <a class="button pointer padding-left-4 open">Open</a>
+                    </div>
+                </div>
+                <div class="collapse-body full-width-row-wrapper">
+                    <div class="tabs-temp relative-flex-row margin-bottom-4 hide">
+                        <div class="grow-1 relative-flex-row max-width-100p">
+                            <div class="indecator width-32 center-children">
+                                <div class="progress c100 smallx24">
+                                    <span>12%</span>
+                                    <div class="slice">
+                                        <div class="bar"></div>
+                                        <div class="fill"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="grow-1 full-width-row-wrapper max-width-100p-32">
+                                <div class="relative-flex-row padding-bottom-1">
+                                    <div class="page-link relative-flex-row max-width-100p-16">
+                                        <a class="pointer truncate none-text-decoration z-index-1">https://developer.chrome.com/extensions/overview</a>
+                                    </div>
+                                    <div class="link-action height-1em">
+                                        <a class="pointer center-children height-100p"><img class="height-100p" src="images/copy.svg" alt="Copy"></a>
+                                    </div>
+                                </div>
+                                <div class="relative-flex-row max-width-100p-16">
+                                    <span class="page-title max-width-100p">
+                                    <p class="pointer truncate padding-0 margin-0">Overview - Google Chrome</p>
+                                </span>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- <div class="width-32">
+                            <div><a class="pointer">x</a></div>
+                        </div> -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    <div id="test">
+    </div>
+</body>
+<script src="popup.js"></script>
+
+</html>

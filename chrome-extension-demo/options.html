@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <style>
+        button {
+            height: 30px;
+            width: 30px;
+            outline: none;
+            margin: 10px;
+        }
+        
+        .row {
+            padding: 16px;
+        }
+        
+        .red {
+            color: red;
+        }
+        
+        .green {
+            color: green;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="settings">
+            <div class="row">
+                <span>Server:</span>
+                <span><input id="server_host" type="text"></span>
+            </div>
+            <!-- <div class="row">
+                <span>Save opened tabs every <input id="save_inter" type="number" value="1"> minutes</span>
+            </div> -->
+            <div class="row">
+                <input id="apply" type="submit" value="Apply" />
+            </div>
+            <div class="row">
+                <span id="msg"></span>
+            </div>
+        </div>
+    </div>
+</body>
+<script src="options.js"></script>
+
+</html>
