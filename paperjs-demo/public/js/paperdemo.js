@@ -136,12 +136,17 @@ paperjsDemo = function () {
             //     linkVal = 'http://' + linkVal;
             // }
             if (!editAbort) {
-                if (!!link && !!link.data && !!link.data.link) {
-                    link.data.link = linkVal;
-                } else {
-                    // var point = [ textBox.bounds.right + 4, textBox.bounds.y];
-                    new Actions(linkVal).toggleVisible(true).addTo(item);
+                if (!!linkVal) {
+                    if (!!link && !!link.data && !!link.data.link) {
+                        link.data.link = linkVal;
+                    } else {
+                        // var point = [ textBox.bounds.right + 4, textBox.bounds.y];
+                        new Actions(linkVal).toggleVisible(true).addTo(item);
+                    }
+                } else if (!!link && !!link.data && !!link.data.link){
+                    link.remove();
                 }
+                
             }
         });
     }
