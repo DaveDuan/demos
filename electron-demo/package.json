@@ -23,7 +23,7 @@
     },
     "dependencies": {
         "electron-store": "^5.1.0",
-        "ssh2": "^0.8.7"
+        "ssh2": "^1.4.0"
     },
     "build": {
         "appId": "123456789",
